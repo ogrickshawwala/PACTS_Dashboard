@@ -80,3 +80,19 @@ export interface AuthUser {
   createdAt: string | null
   lastLogin: string | null
 }
+
+export interface SystemMetrics {
+  requestsPerMinute: number
+  totalRequests: number
+  failedRequests: number
+  configDownloads: number
+  connectedClients: number
+  knownClients: number
+  staleClients: number
+  productionVersion: number | null
+  approvedVersion: number | null
+  developmentVersion: number | null
+  lastPublish: string | null
+  lastRollback: string | null
+  uptimeSeconds: number
+}

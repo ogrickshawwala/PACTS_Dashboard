@@ -6,6 +6,7 @@ import type {
   EnvironmentVersion,
   Paginated,
   Role,
+  SystemMetrics,
   VersionDifference,
   VersionSnapshot,
 } from './types'
@@ -158,6 +159,10 @@ export async function getEnvironmentVersion(environment: Environment): Promise<E
 
 export function getHealth(): Promise<{ service: string; env: string }> {
   return request('/api/v1/health')
+}
+
+export function getSystemMetrics(): Promise<SystemMetrics> {
+  return request('/api/v1/metrics/system')
 }
 
 // ---- Auth --------------------------------------------------------------------

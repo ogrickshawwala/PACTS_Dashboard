@@ -26,6 +26,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import TuneIcon from '@mui/icons-material/Tune'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import HistoryIcon from '@mui/icons-material/History'
+import InsightsIcon from '@mui/icons-material/Insights'
 import PublishIcon from '@mui/icons-material/Publish'
 import PeopleIcon from '@mui/icons-material/People'
 import LogoutIcon from '@mui/icons-material/Logout'
@@ -43,6 +44,7 @@ const NAV_ITEMS: Array<{ label: string; path: string; icon: React.ReactNode; min
   { label: 'Configurations', path: '/configurations', icon: <TuneIcon fontSize="small" /> },
   { label: 'Version Control', path: '/versions', icon: <AccountTreeIcon fontSize="small" /> },
   { label: 'Audit Logs', path: '/audit', icon: <HistoryIcon fontSize="small" /> },
+  { label: 'Metrics', path: '/metrics', icon: <InsightsIcon fontSize="small" /> },
   { label: 'Users', path: '/users', icon: <PeopleIcon fontSize="small" />, minRole: 'Admin' },
 ]
 
