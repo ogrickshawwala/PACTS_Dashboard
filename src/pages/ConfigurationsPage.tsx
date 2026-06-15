@@ -32,6 +32,7 @@ import {
 } from '../api/client'
 import type { ConfigDefinition, ConfigType } from '../api/types'
 import ValueEditor, { formatValue } from '../components/ValueEditor'
+import { useAuth } from '../components/AuthContext'
 
 const CATEGORIES = ['Gameplay', 'Economy', 'Audio', 'Networking', 'Events', 'Platform', 'Debug', 'LiveOps', 'UI']
 const TYPES: ConfigType[] = ['Boolean', 'Integer', 'Float', 'String', 'JsonObject', 'JsonArray']
@@ -54,6 +55,8 @@ function DetailDrawer({
   onClose: () => void
   onSaved: (message: string) => void
 }) {
+  const { hasRole } = useAuth()
+  const canEdit = hasRole('Designer')
   const [value, setValue] = useState<unknown>(null)
   const [valid, setValid] = useState(true)
   const [error, setError] = useState('')
@@ -144,13 +147,20 @@ function DetailDrawer({
         }}
       />
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+      {!canEdit && (
+        <Alert severity="info" sx={{ mt: 2 }}>Read-only access — you can view but not edit.</Alert>
+      )}
       <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
-        <Button variant="contained" disabled={busy || !valid} onClick={save}>
-          Save
-        </Button>
-        <Button color="warning" disabled={busy} onClick={deprecate}>
-          {config.status === 'Deprecated' ? 'Reactivate' : 'Deprecate'}
-        </Button>
+        {canEdit && (
+          <Button variant="contained" disabled={busy || !valid} onClick={save}>
+            Save
+          </Button>
+        )}
+        {canEdit && (
+          <Button color="warning" disabled={busy} onClick={deprecate}>
+            {config.status === 'Deprecated' ? 'Reactivate' : 'Deprecate'}
+          </Button>
+        )}
         <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>Close</Button>
       </Stack>
@@ -288,6 +298,8 @@ function CreateDialog({
 }
 
 export default function ConfigurationsPage() {
+  const { hasRole } = useAuth()
+  const canEdit = hasRole('Designer')
   const [items, setItems] = useState<ConfigDefinition[]>([])
   const [totalItems, setTotalItems] = useState(0)
   const [page, setPage] = useState(0)
@@ -342,9 +354,11 @@ export default function ConfigurationsPage() {
           {TYPES.map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
         </TextField>
         <IconButton onClick={load} size="small"><RefreshIcon /></IconButton>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
-          New
-        </Button>
+        {canEdit && (
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
+            New
+          </Button>
+        )}
       </Stack>
 
       {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}

@@ -68,3 +68,15 @@ export interface EnvironmentVersion {
   environment: string
   publishedAt: string | null
 }
+
+export type Role = 'Admin' | 'Designer' | 'ReadOnly'
+
+export interface AuthUser {
+  id: number
+  username: string
+  email: string | null
+  role: Role
+  isActive: boolean
+  createdAt: string | null
+  lastLogin: string | null
+}

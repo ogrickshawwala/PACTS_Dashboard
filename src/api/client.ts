@@ -1,9 +1,11 @@
 import type {
   AuditEntry,
+  AuthUser,
   ConfigDefinition,
   Environment,
   EnvironmentVersion,
   Paginated,
+  Role,
   VersionDifference,
   VersionSnapshot,
 } from './types'
@@ -21,22 +23,35 @@ export class ApiError extends Error {
   }
 }
 
-export function getActingUser(): string {
-  return localStorage.getItem('pactsUser') ?? ''
+const TOKEN_KEY = 'pactsToken'
+
+export function getToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY)
 }
 
-export function setActingUser(user: string): void {
-  localStorage.setItem('pactsUser', user)
+export function setToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token)
+}
+
+export function clearToken(): void {
+  localStorage.removeItem(TOKEN_KEY)
+}
+
+// The AuthContext registers a handler so a 401 anywhere forces a logout.
+let onUnauthorized: (() => void) | null = null
+export function setUnauthorizedHandler(handler: () => void): void {
+  onUnauthorized = handler
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const token = getToken()
   let response: Response
   try {
     response = await fetch(`${BASE_URL}${path}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'X-PACTS-User': getActingUser() || 'dashboard',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
     })
@@ -45,6 +60,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
   const body = await response.json().catch(() => null)
   if (!body || body.success !== true) {
+    if (response.status === 401) {
+      clearToken()
+      onUnauthorized?.()
+    }
     throw new ApiError(body?.errorCode ?? 'SERVER_ERROR', body?.message ?? `HTTP ${response.status}`)
   }
   return body.data as T
@@ -139,4 +158,45 @@ export async function getEnvironmentVersion(environment: Environment): Promise<E
 
 export function getHealth(): Promise<{ service: string; env: string }> {
   return request('/api/v1/health')
+}
+
+// ---- Auth --------------------------------------------------------------------
+
+export function login(username: string, password: string): Promise<{ token: string; user: AuthUser }> {
+  return request('/api/v1/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) })
+}
+
+export function getMe(): Promise<AuthUser> {
+  return request('/api/v1/auth/me')
+}
+
+export function changePassword(currentPassword: string, newPassword: string): Promise<{ changed: boolean }> {
+  return request('/api/v1/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+}
+
+// ---- Admin: users ------------------------------------------------------------
+
+export function listUsers(): Promise<{ items: AuthUser[] }> {
+  return request('/api/v1/admin/users')
+}
+
+export function createUser(payload: { username: string; password: string; role: Role; email?: string }): Promise<AuthUser> {
+  return request('/api/v1/admin/users', { method: 'POST', body: JSON.stringify(payload) })
+}
+
+export function setUserRole(username: string, role: Role): Promise<AuthUser> {
+  return request(`/api/v1/admin/users/${encodeURIComponent(username)}/role`, {
+    method: 'POST',
+    body: JSON.stringify({ role }),
+  })
+}
+
+export function setUserActive(username: string, isActive: boolean): Promise<AuthUser> {
+  return request(`/api/v1/admin/users/${encodeURIComponent(username)}/active`, {
+    method: 'POST',
+    body: JSON.stringify({ isActive }),
+  })
 }

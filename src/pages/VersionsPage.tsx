@@ -33,6 +33,7 @@ import {
 import type { VersionDifference, VersionSnapshot } from '../api/types'
 import { formatValue } from '../components/ValueEditor'
 import { ENV_COLORS } from '../theme'
+import { useAuth } from '../components/AuthContext'
 import { useEnvironments } from '../components/EnvContext'
 
 function CompareDialog({ versions, onClose }: { versions: VersionSnapshot[]; onClose: () => void }) {
@@ -161,6 +162,9 @@ function RollbackDialog({
 
 export default function VersionsPage() {
   const { refresh: refreshEnvironments, production } = useEnvironments()
+  const { hasRole } = useAuth()
+  const canApprove = hasRole('Designer')
+  const canPromote = hasRole('Admin')
   const [items, setItems] = useState<VersionSnapshot[]>([])
   const [totalItems, setTotalItems] = useState(0)
   const [page, setPage] = useState(0)
@@ -253,12 +257,12 @@ export default function VersionsPage() {
                     {snapshot.promotedAt ? new Date(snapshot.promotedAt).toLocaleString() : ''}
                   </TableCell>
                   <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                    {snapshot.environment === 'Development' && (
+                    {snapshot.environment === 'Development' && canApprove && (
                       <Button size="small" onClick={() => act(() => approveVersion(snapshot.version), (v) => `Version ${v.version} approved.`)}>
                         Approve
                       </Button>
                     )}
-                    {snapshot.environment === 'Approved' && (
+                    {snapshot.environment === 'Approved' && canPromote && (
                       <Button
                         size="small"
                         color="warning"
@@ -267,7 +271,7 @@ export default function VersionsPage() {
                         Promote
                       </Button>
                     )}
-                    {!isProduction && production && (
+                    {!isProduction && production && canPromote && (
                       <Button size="small" color="error" onClick={() => setRollbackTarget(snapshot.version)}>
                         Rollback to
                       </Button>

@@ -20,23 +20,30 @@ import TextField from '@mui/material/TextField'
 import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import TuneIcon from '@mui/icons-material/Tune'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import HistoryIcon from '@mui/icons-material/History'
 import PublishIcon from '@mui/icons-material/Publish'
-import PersonIcon from '@mui/icons-material/Person'
-import { ApiError, getActingUser, publishVersion, setActingUser } from '../api/client'
+import PeopleIcon from '@mui/icons-material/People'
+import LogoutIcon from '@mui/icons-material/Logout'
+// PersonIcon removed with the old acting-user field
+import { ApiError, publishVersion } from '../api/client'
+import type { Role } from '../api/types'
 import { ENV_COLORS } from '../theme'
+import { useAuth } from './AuthContext'
 import { EnvProvider, useEnvironments } from './EnvContext'
 
 const SIDEBAR_WIDTH = 210
 
-const NAV_ITEMS = [
+const NAV_ITEMS: Array<{ label: string; path: string; icon: React.ReactNode; minRole?: Role }> = [
   { label: 'Dashboard', path: '/', icon: <DashboardIcon fontSize="small" /> },
   { label: 'Configurations', path: '/configurations', icon: <TuneIcon fontSize="small" /> },
   { label: 'Version Control', path: '/versions', icon: <AccountTreeIcon fontSize="small" /> },
   { label: 'Audit Logs', path: '/audit', icon: <HistoryIcon fontSize="small" /> },
+  { label: 'Users', path: '/users', icon: <PeopleIcon fontSize="small" />, minRole: 'Admin' },
 ]
 
 function EnvironmentIndicator() {
@@ -71,6 +78,7 @@ function EnvironmentIndicator() {
 
 function PublishButton() {
   const { refresh } = useEnvironments()
+  const { hasRole } = useAuth()
   const [open, setOpen] = useState(false)
   const [notes, setNotes] = useState('')
   const [busy, setBusy] = useState(false)
@@ -92,6 +100,9 @@ function PublishButton() {
       setBusy(false)
     }
   }
+
+  // Publishing is a Designer+ action; ReadOnly users don't see it.
+  if (!hasRole('Designer')) return null
 
   return (
     <>
@@ -132,29 +143,28 @@ function PublishButton() {
   )
 }
 
-function UserField() {
-  const [user, setUser] = useState(getActingUser())
+function UserMenu() {
+  const { user, logout } = useAuth()
+  if (!user) return null
   return (
-    <Tooltip title="Acting user recorded in the audit log (auth arrives in Phase 3)">
-      <TextField
-        size="small"
-        placeholder="your name"
-        value={user}
-        onChange={(e) => {
-          setUser(e.target.value)
-          setActingUser(e.target.value)
-        }}
-        slotProps={{
-          input: { startAdornment: <PersonIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} /> },
-        }}
-        sx={{ width: 170 }}
-      />
-    </Tooltip>
+    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+      <Stack sx={{ alignItems: 'flex-end', lineHeight: 1 }}>
+        <Typography variant="body2" sx={{ fontWeight: 600 }}>{user.username}</Typography>
+        <Typography variant="caption" color="text.secondary">{user.role}</Typography>
+      </Stack>
+      <Tooltip title="Sign out">
+        <IconButton size="small" onClick={logout}>
+          <LogoutIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </Stack>
   )
 }
 
 export default function Layout() {
   const location = useLocation()
+  const { hasRole } = useAuth()
+  const navItems = NAV_ITEMS.filter((item) => !item.minRole || hasRole(item.minRole))
   return (
     <EnvProvider>
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -167,8 +177,9 @@ export default function Layout() {
               Production Administration &amp; Configuration Tracking System
             </Typography>
             <EnvironmentIndicator />
-            <UserField />
             <PublishButton />
+            <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+            <UserMenu />
           </Toolbar>
         </AppBar>
         <Drawer
@@ -177,7 +188,7 @@ export default function Layout() {
         >
           <Toolbar variant="dense" />
           <List dense>
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <ListItemButton
                 key={item.path}
                 component={Link}
