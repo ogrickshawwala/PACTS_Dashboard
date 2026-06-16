@@ -25,10 +25,12 @@ import IconButton from '@mui/material/IconButton'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import TuneIcon from '@mui/icons-material/Tune'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
+import DevicesIcon from '@mui/icons-material/Devices'
 import HistoryIcon from '@mui/icons-material/History'
 import InsightsIcon from '@mui/icons-material/Insights'
 import PublishIcon from '@mui/icons-material/Publish'
 import PeopleIcon from '@mui/icons-material/People'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import LogoutIcon from '@mui/icons-material/Logout'
 // PersonIcon removed with the old acting-user field
 import { ApiError, publishVersion } from '../api/client'
@@ -43,8 +45,10 @@ const NAV_ITEMS: Array<{ label: string; path: string; icon: React.ReactNode; min
   { label: 'Dashboard', path: '/', icon: <DashboardIcon fontSize="small" /> },
   { label: 'Configurations', path: '/configurations', icon: <TuneIcon fontSize="small" /> },
   { label: 'Version Control', path: '/versions', icon: <AccountTreeIcon fontSize="small" /> },
+  { label: 'Platform Overrides', path: '/platform-overrides', icon: <DevicesIcon fontSize="small" /> },
   { label: 'Audit Logs', path: '/audit', icon: <HistoryIcon fontSize="small" /> },
   { label: 'Metrics', path: '/metrics', icon: <InsightsIcon fontSize="small" /> },
+  { label: 'Emergency', path: '/emergency', icon: <WarningAmberIcon fontSize="small" />, minRole: 'Admin' },
   { label: 'Users', path: '/users', icon: <PeopleIcon fontSize="small" />, minRole: 'Admin' },
 ]
 

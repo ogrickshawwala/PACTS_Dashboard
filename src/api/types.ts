@@ -69,6 +69,41 @@ export interface EnvironmentVersion {
   publishedAt: string | null
 }
 
+export interface EmergencyOverride {
+  key: string
+  forcedValue: unknown
+  originalValue: unknown
+  active: boolean
+  baseVersion: number | null
+  emergencyVersion: number | null
+  reason: string
+  activatedBy: string
+  activatedAt: string | null
+  clearedBy: string | null
+  clearedAt: string | null
+  clearReason: string | null
+}
+
+export interface KillSwitchStatus {
+  count: number
+  active: EmergencyOverride[]
+}
+
+export interface PlatformOverrideRow {
+  key: string
+  type: ConfigType
+  globalValue: unknown
+  overrides: Record<string, unknown>
+}
+
+export interface PlatformOverrideMatrix {
+  version: number
+  environment: Environment
+  editable: boolean
+  platforms: string[]
+  configs: PlatformOverrideRow[]
+}
+
 export type Role = 'Admin' | 'Designer' | 'ReadOnly'
 
 export interface AuthUser {

@@ -2,9 +2,12 @@ import type {
   AuditEntry,
   AuthUser,
   ConfigDefinition,
+  EmergencyOverride,
   Environment,
   EnvironmentVersion,
+  KillSwitchStatus,
   Paginated,
+  PlatformOverrideMatrix,
   Role,
   SystemMetrics,
   VersionDifference,
@@ -138,6 +141,59 @@ export function compareVersions(sourceVersion: number, targetVersion: number): P
   differences: VersionDifference[]
 }> {
   return request(`/api/v1/admin/compare${query({ sourceVersion, targetVersion })}`)
+}
+
+export function exportVersion(version: number): Promise<VersionSnapshot & { configs: Record<string, unknown> }> {
+  return request(`/api/v1/admin/export/${version}`)
+}
+
+// ---- Admin: emergency controls (kill-switches) -------------------------------
+
+export function getKillSwitchStatus(): Promise<KillSwitchStatus> {
+  return request('/api/v1/admin/emergency/status')
+}
+
+export function activateKillSwitch(key: string, value: unknown, reason: string): Promise<EmergencyOverride> {
+  return request('/api/v1/admin/emergency/activate', {
+    method: 'POST',
+    body: JSON.stringify({ key, value, reason }),
+  })
+}
+
+export function clearKillSwitch(key: string, reason: string): Promise<EmergencyOverride> {
+  return request('/api/v1/admin/emergency/clear', {
+    method: 'POST',
+    body: JSON.stringify({ key, reason }),
+  })
+}
+
+// ---- Admin: platform overrides -----------------------------------------------
+
+export function getPlatformOverrides(version?: number): Promise<PlatformOverrideMatrix> {
+  return request(`/api/v1/admin/platform-overrides${query({ version })}`)
+}
+
+export function setPlatformOverride(
+  version: number | undefined,
+  key: string,
+  platform: string,
+  value: unknown,
+): Promise<PlatformOverrideMatrix> {
+  return request('/api/v1/admin/platform-overrides', {
+    method: 'POST',
+    body: JSON.stringify({ version, key, platform, value }),
+  })
+}
+
+export function removePlatformOverride(
+  version: number | undefined,
+  key: string,
+  platform: string,
+): Promise<PlatformOverrideMatrix> {
+  return request('/api/v1/admin/platform-overrides', {
+    method: 'DELETE',
+    body: JSON.stringify({ version, key, platform }),
+  })
 }
 
 // ---- Admin: audit -------------------------------------------------------------
