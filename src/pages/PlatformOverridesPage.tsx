@@ -93,7 +93,7 @@ export default function PlatformOverridesPage() {
       )}
 
       {loading ? (
-        <Stack alignItems="center" sx={{ py: 6 }}><CircularProgress /></Stack>
+        <Stack sx={{ alignItems: 'center', py: 6 }}><CircularProgress /></Stack>
       ) : matrix ? (
         <Card variant="outlined" sx={{ overflowX: 'auto' }}>
           <Table size="small" sx={{ minWidth: 720 }}>

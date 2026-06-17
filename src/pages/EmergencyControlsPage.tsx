@@ -132,7 +132,7 @@ export default function EmergencyControlsPage() {
       {loadError && <Alert severity="error" sx={{ mb: 2 }}>{loadError}</Alert>}
 
       {loading ? (
-        <Stack alignItems="center" sx={{ py: 6 }}><CircularProgress /></Stack>
+        <Stack sx={{ alignItems: 'center', py: 6 }}><CircularProgress /></Stack>
       ) : (
         <Stack spacing={2.5}>
           <ActiveSwitches

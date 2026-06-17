@@ -95,7 +95,7 @@ export default function ScheduledReleasesPage() {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       {loading ? (
-        <Stack alignItems="center" sx={{ py: 6 }}><CircularProgress /></Stack>
+        <Stack sx={{ alignItems: 'center', py: 6 }}><CircularProgress /></Stack>
       ) : (
         <Card variant="outlined" sx={{ overflowX: 'auto' }}>
           <Table size="small">
