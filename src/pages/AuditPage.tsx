@@ -17,6 +17,7 @@ import Typography from '@mui/material/Typography'
 import { ApiError, listAudit } from '../api/client'
 import type { AuditEntry } from '../api/types'
 import { formatValue } from '../components/ValueEditor'
+import { formatIST } from '../utils/datetime'
 
 export default function AuditPage() {
   const [items, setItems] = useState<AuditEntry[]>([])
@@ -88,7 +89,7 @@ export default function AuditPage() {
             {items.map((entry, index) => (
               <TableRow key={index} hover>
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                  {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : ''}
+                  {formatIST(entry.timestamp)}
                 </TableCell>
                 <TableCell>{entry.user}</TableCell>
                 <TableCell><Chip size="small" variant="outlined" label={entry.action} /></TableCell>

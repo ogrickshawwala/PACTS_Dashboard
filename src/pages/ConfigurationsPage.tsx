@@ -33,6 +33,7 @@ import {
 import type { ConfigDefinition, ConfigType } from '../api/types'
 import ValueEditor, { formatValue } from '../components/ValueEditor'
 import { useAuth } from '../components/AuthContext'
+import { formatIST } from '../utils/datetime'
 
 const CATEGORIES = ['Gameplay', 'Economy', 'Audio', 'Networking', 'Events', 'Platform', 'Debug', 'LiveOps', 'UI']
 const TYPES: ConfigType[] = ['Boolean', 'Integer', 'Float', 'String', 'JsonObject', 'JsonArray']
@@ -130,7 +131,7 @@ function DetailDrawer({
         )}
         <Typography variant="caption" color="text.secondary">
           Last modified by {config.lastModifiedBy}
-          {config.lastModified ? ` at ${new Date(config.lastModified).toLocaleString()}` : ''}
+          {config.lastModified ? ` at ${formatIST(config.lastModified)}` : ''}
         </Typography>
       </Stack>
 
@@ -416,7 +417,7 @@ export default function ConfigurationsPage() {
                   </Stack>
                 </TableCell>
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                  {config.lastModified ? new Date(config.lastModified).toLocaleString() : ''}
+                  {formatIST(config.lastModified)}
                 </TableCell>
               </TableRow>
             ))}

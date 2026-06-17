@@ -14,6 +14,7 @@ import { listAudit } from '../api/client'
 import type { AuditEntry, EnvironmentVersion } from '../api/types'
 import { formatValue } from '../components/ValueEditor'
 import { ENV_COLORS } from '../theme'
+import { formatIST } from '../utils/datetime'
 import { useEnvironments } from '../components/EnvContext'
 
 function EnvironmentCard({ name, info }: { name: string; info: EnvironmentVersion | null }) {
@@ -27,7 +28,7 @@ function EnvironmentCard({ name, info }: { name: string; info: EnvironmentVersio
           {info ? `v${info.configVersion}` : '—'}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          {info?.publishedAt ? `published ${new Date(info.publishedAt).toLocaleString()}` : 'nothing published yet'}
+          {info?.publishedAt ? `published ${formatIST(info.publishedAt)}` : 'nothing published yet'}
         </Typography>
       </CardContent>
     </Card>
@@ -83,7 +84,7 @@ export default function DashboardPage() {
             {audit.map((entry, index) => (
               <TableRow key={index} hover>
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                  {entry.timestamp ? new Date(entry.timestamp).toLocaleString() : ''}
+                  {formatIST(entry.timestamp)}
                 </TableCell>
                 <TableCell>{entry.user}</TableCell>
                 <TableCell>

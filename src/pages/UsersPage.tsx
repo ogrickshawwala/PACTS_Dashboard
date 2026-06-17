@@ -29,6 +29,7 @@ import {
 } from '../api/client'
 import type { AuthUser, Role } from '../api/types'
 import { useAuth } from '../components/AuthContext'
+import { formatIST } from '../utils/datetime'
 
 const ROLES: Role[] = ['Admin', 'Designer', 'ReadOnly']
 
@@ -167,7 +168,7 @@ export default function UsersPage() {
                     <Switch checked={u.isActive} disabled={isSelf} onChange={() => toggleActive(u)} />
                   </TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {u.lastLogin ? new Date(u.lastLogin).toLocaleString() : 'never'}
+                    {formatIST(u.lastLogin, 'never')}
                   </TableCell>
                 </TableRow>
               )

@@ -26,6 +26,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import TuneIcon from '@mui/icons-material/Tune'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import DevicesIcon from '@mui/icons-material/Devices'
+import ScheduleIcon from '@mui/icons-material/Schedule'
 import HistoryIcon from '@mui/icons-material/History'
 import InsightsIcon from '@mui/icons-material/Insights'
 import PublishIcon from '@mui/icons-material/Publish'
@@ -38,6 +39,7 @@ import type { Role } from '../api/types'
 import { ENV_COLORS } from '../theme'
 import { useAuth } from './AuthContext'
 import { EnvProvider, useEnvironments } from './EnvContext'
+import NotificationBell from './NotificationBell'
 
 const SIDEBAR_WIDTH = 210
 
@@ -46,6 +48,7 @@ const NAV_ITEMS: Array<{ label: string; path: string; icon: React.ReactNode; min
   { label: 'Configurations', path: '/configurations', icon: <TuneIcon fontSize="small" /> },
   { label: 'Version Control', path: '/versions', icon: <AccountTreeIcon fontSize="small" /> },
   { label: 'Platform Overrides', path: '/platform-overrides', icon: <DevicesIcon fontSize="small" /> },
+  { label: 'Scheduled Releases', path: '/scheduled-releases', icon: <ScheduleIcon fontSize="small" /> },
   { label: 'Audit Logs', path: '/audit', icon: <HistoryIcon fontSize="small" /> },
   { label: 'Metrics', path: '/metrics', icon: <InsightsIcon fontSize="small" /> },
   { label: 'Emergency', path: '/emergency', icon: <WarningAmberIcon fontSize="small" />, minRole: 'Admin' },
@@ -184,6 +187,7 @@ export default function Layout() {
             </Typography>
             <EnvironmentIndicator />
             <PublishButton />
+            <NotificationBell />
             <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
             <UserMenu />
           </Toolbar>

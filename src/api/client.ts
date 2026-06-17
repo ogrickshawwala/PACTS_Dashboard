@@ -6,8 +6,10 @@ import type {
   Environment,
   EnvironmentVersion,
   KillSwitchStatus,
+  NotificationList,
   Paginated,
   PlatformOverrideMatrix,
+  ScheduledRelease,
   Role,
   SystemMetrics,
   VersionDifference,
@@ -193,6 +195,40 @@ export function removePlatformOverride(
   return request('/api/v1/admin/platform-overrides', {
     method: 'DELETE',
     body: JSON.stringify({ version, key, platform }),
+  })
+}
+
+// ---- Admin: scheduled releases -----------------------------------------------
+
+export function listScheduledReleases(params: { page?: number; pageSize?: number } = {}): Promise<Paginated<ScheduledRelease>> {
+  return request(`/api/v1/admin/scheduled-releases${query(params)}`)
+}
+
+export function createScheduledRelease(version: number, scheduledTime: string, note?: string): Promise<ScheduledRelease> {
+  return request('/api/v1/admin/scheduled-releases', {
+    method: 'POST',
+    body: JSON.stringify({ version, scheduledTime, note }),
+  })
+}
+
+export function cancelScheduledRelease(id: number): Promise<ScheduledRelease> {
+  return request(`/api/v1/admin/scheduled-releases/${id}/cancel`, { method: 'POST' })
+}
+
+// ---- Admin: notifications ----------------------------------------------------
+
+export function listNotifications(params: { unreadOnly?: boolean; page?: number; pageSize?: number } = {}): Promise<NotificationList> {
+  return request(`/api/v1/admin/notifications${query({
+    unreadOnly: params.unreadOnly ? 'true' : undefined,
+    page: params.page,
+    pageSize: params.pageSize,
+  })}`)
+}
+
+export function markNotificationsRead(id?: number): Promise<{ marked: number; unreadCount: number }> {
+  return request('/api/v1/admin/notifications/read', {
+    method: 'POST',
+    body: JSON.stringify(id !== undefined ? { id } : {}),
   })
 }
 

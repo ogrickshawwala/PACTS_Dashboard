@@ -35,6 +35,7 @@ import { formatValue } from '../components/ValueEditor'
 import { ENV_COLORS } from '../theme'
 import { useAuth } from '../components/AuthContext'
 import { useEnvironments } from '../components/EnvContext'
+import { formatIST } from '../utils/datetime'
 
 function CompareDialog({ versions, onClose }: { versions: VersionSnapshot[]; onClose: () => void }) {
   const [source, setSource] = useState<number | ''>('')
@@ -251,10 +252,10 @@ export default function VersionsPage() {
                   </TableCell>
                   <TableCell>{snapshot.createdBy}</TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {snapshot.createdAt ? new Date(snapshot.createdAt).toLocaleString() : ''}
+                    {formatIST(snapshot.createdAt)}
                   </TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {snapshot.promotedAt ? new Date(snapshot.promotedAt).toLocaleString() : ''}
+                    {formatIST(snapshot.promotedAt)}
                   </TableCell>
                   <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                     {snapshot.environment === 'Development' && canApprove && (

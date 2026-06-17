@@ -10,6 +10,7 @@ import EmergencyControlsPage from './pages/EmergencyControlsPage'
 import LoginPage from './pages/LoginPage'
 import MetricsPage from './pages/MetricsPage'
 import PlatformOverridesPage from './pages/PlatformOverridesPage'
+import ScheduledReleasesPage from './pages/ScheduledReleasesPage'
 import UsersPage from './pages/UsersPage'
 import VersionsPage from './pages/VersionsPage'
 
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/configurations" element={<ConfigurationsPage />} />
         <Route path="/versions" element={<VersionsPage />} />
         <Route path="/platform-overrides" element={<PlatformOverridesPage />} />
+        <Route path="/scheduled-releases" element={<ScheduledReleasesPage />} />
         <Route path="/audit" element={<AuditPage />} />
         <Route path="/metrics" element={<MetricsPage />} />
         <Route path="/emergency" element={<EmergencyControlsPage />} />

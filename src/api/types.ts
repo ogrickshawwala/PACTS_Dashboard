@@ -104,6 +104,35 @@ export interface PlatformOverrideMatrix {
   configs: PlatformOverrideRow[]
 }
 
+export type ScheduleStatus = 'Pending' | 'Processing' | 'Completed' | 'Failed' | 'Cancelled'
+
+export interface ScheduledRelease {
+  id: number
+  version: number | null
+  scheduledTime: string | null
+  status: ScheduleStatus
+  createdBy: string
+  createdAt: string | null
+  executedAt: string | null
+  detail: string | null
+}
+
+export interface AppNotification {
+  id: number
+  type: string
+  message: string
+  read: boolean
+  createdAt: string | null
+}
+
+export interface NotificationList {
+  totalItems: number
+  totalPages: number
+  currentPage: number
+  unreadCount: number
+  items: AppNotification[]
+}
+
 export type Role = 'Admin' | 'Designer' | 'ReadOnly'
 
 export interface AuthUser {

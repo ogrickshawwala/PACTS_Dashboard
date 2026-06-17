@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ApiError, getSystemMetrics } from '../api/client'
 import type { SystemMetrics } from '../api/types'
+import { formatIST } from '../utils/datetime'
 
 function MetricCard({ label, value, hint, color }: {
   label: string
@@ -28,7 +29,7 @@ function MetricCard({ label, value, hint, color }: {
 }
 
 function fmtTime(iso: string | null): string {
-  return iso ? new Date(iso).toLocaleString() : 'never'
+  return formatIST(iso, 'never')
 }
 
 function fmtUptime(seconds: number): string {
