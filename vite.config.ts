@@ -11,4 +11,13 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+  preview: {
+    // Prod build is served via `vite preview`, fronted by Caddy at
+    // https://pacts.rickshaw.local. vite preview blocks unknown Host headers by
+    // default, so the proxied hostname must be allow-listed here.
+    host: true,
+    port: 5173,
+    strictPort: true,
+    allowedHosts: ['pacts.rickshaw.local'],
+  },
 })

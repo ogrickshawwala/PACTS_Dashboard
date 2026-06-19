@@ -66,7 +66,10 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
   const body = await response.json().catch(() => null)
   if (!body || body.success !== true) {
-    if (response.status === 401) {
+    // A 401 from the API-key-protected /client/* endpoints uses a different auth
+    // scheme (UE client key) than the admin JWT. It must NOT clear the admin
+    // session — otherwise enabling PACTS_CLIENT_KEYS logs admins out on load.
+    if (response.status === 401 && !path.startsWith('/api/v1/client/')) {
       clearToken()
       onUnauthorized?.()
     }
@@ -242,7 +245,9 @@ export function listAudit(params: { page?: number; pageSize?: number; user?: str
 
 export async function getEnvironmentVersion(environment: Environment): Promise<EnvironmentVersion | null> {
   try {
-    return await request(`/api/v1/client/version${query({ environment })}`)
+    // Admin (JWT) endpoint — the dashboard has no UE client key, so it can't use
+    // /client/version. Mirrors the same resolution server-side.
+    return await request(`/api/v1/admin/environment-version${query({ environment })}`)
   } catch (error) {
     if (error instanceof ApiError && error.errorCode === 'VERSION_NOT_FOUND') return null
     throw error

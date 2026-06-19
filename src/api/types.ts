@@ -133,7 +133,7 @@ export interface NotificationList {
   items: AppNotification[]
 }
 
-export type Role = 'Admin' | 'Designer' | 'ReadOnly'
+export type Role = 'Admin' | 'Designer' | 'Dev' | 'ReadOnly'
 
 export interface AuthUser {
   id: number

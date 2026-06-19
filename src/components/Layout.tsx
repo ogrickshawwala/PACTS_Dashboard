@@ -110,8 +110,8 @@ function PublishButton() {
     }
   }
 
-  // Publishing is a Designer+ action; ReadOnly users don't see it.
-  if (!hasRole('Designer')) return null
+  // Publishing is a Dev+ action (Dev/Designer/Admin); ReadOnly users don't see it.
+  if (!hasRole('Dev')) return null
 
   return (
     <>

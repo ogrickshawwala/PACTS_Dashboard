@@ -18,7 +18,7 @@ interface AuthState {
   hasRole: (min: Role) => boolean
 }
 
-const RANK: Record<Role, number> = { ReadOnly: 1, Designer: 2, Admin: 3 }
+const RANK: Record<Role, number> = { ReadOnly: 1, Dev: 2, Designer: 3, Admin: 4 }
 
 const AuthContext = createContext<AuthState>({
   user: null,
@@ -46,8 +46,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUnauthorizedHandler(() => setUser(null))
   }, [])
 
-  // On load, if we have a token, validate it by fetching the current user.
+  // On load: capture a token handed back by the Zoho callback (#token=...),
+  // then validate whatever token we have by fetching the current user.
   useEffect(() => {
+    const m = window.location.hash.match(/token=([^&]+)/)
+    if (m) {
+      setToken(decodeURIComponent(m[1]))
+      window.history.replaceState(null, '', window.location.pathname + window.location.search)
+    }
     if (!getToken()) {
       setReady(true)
       return

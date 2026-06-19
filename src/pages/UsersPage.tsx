@@ -31,7 +31,7 @@ import type { AuthUser, Role } from '../api/types'
 import { useAuth } from '../components/AuthContext'
 import { formatIST } from '../utils/datetime'
 
-const ROLES: Role[] = ['Admin', 'Designer', 'ReadOnly']
+const ROLES: Role[] = ['Admin', 'Designer', 'Dev', 'ReadOnly']
 
 function CreateUserDialog({ open, onClose, onCreated }: {
   open: boolean

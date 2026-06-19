@@ -57,7 +57,7 @@ function DetailDrawer({
   onSaved: (message: string) => void
 }) {
   const { hasRole } = useAuth()
-  const canEdit = hasRole('Designer')
+  const canEdit = hasRole('Dev')
   const [value, setValue] = useState<unknown>(null)
   const [valid, setValid] = useState(true)
   const [error, setError] = useState('')
@@ -300,7 +300,7 @@ function CreateDialog({
 
 export default function ConfigurationsPage() {
   const { hasRole } = useAuth()
-  const canEdit = hasRole('Designer')
+  const canEdit = hasRole('Dev')
   const [items, setItems] = useState<ConfigDefinition[]>([])
   const [totalItems, setTotalItems] = useState(0)
   const [page, setPage] = useState(0)
