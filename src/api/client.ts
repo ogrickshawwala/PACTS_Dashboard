@@ -118,6 +118,13 @@ export function setConfigurationStatus(key: string, status: string, reason?: str
   })
 }
 
+export function setConfigurationDevelopmentOnly(key: string, developmentOnly: boolean): Promise<ConfigDefinition> {
+  return request('/api/v1/admin/configuration/development-only', {
+    method: 'POST',
+    body: JSON.stringify({ key, developmentOnly }),
+  })
+}
+
 // ---- Admin: versions ---------------------------------------------------------
 
 export function listVersions(params: { page?: number; pageSize?: number; environment?: string }): Promise<Paginated<VersionSnapshot>> {

@@ -5,8 +5,10 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
+import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
 import Dialog from '@mui/material/Dialog'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -27,6 +29,7 @@ import {
   ApiError,
   createConfiguration,
   listConfigurations,
+  setConfigurationDevelopmentOnly,
   setConfigurationStatus,
   updateConfigurationValue,
 } from '../api/client'
@@ -98,6 +101,19 @@ function DetailDrawer({
     }
   }
 
+  const toggleDevOnly = async () => {
+    setBusy(true)
+    try {
+      await setConfigurationDevelopmentOnly(config.key, !config.developmentOnly)
+      onSaved(`${config.key} is ${config.developmentOnly ? 'no longer' : 'now'} development-only.`)
+      onClose()
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Update failed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const rules = config.validation
   const ruleParts: string[] = []
   if (rules.minValue !== null) ruleParts.push(`min ${rules.minValue}`)
@@ -114,6 +130,7 @@ function DetailDrawer({
         <Chip size="small" label={config.type} variant="outlined" />
         <Chip size="small" label={config.category} variant="outlined" />
         {config.status !== 'Active' && <Chip size="small" color="warning" label={config.status} />}
+        {config.developmentOnly && <Chip size="small" color="info" label="DEV ONLY" />}
         {config.tags.map((tag) => (
           <Chip size="small" key={tag} label={tag} />
         ))}
@@ -162,6 +179,11 @@ function DetailDrawer({
             {config.status === 'Deprecated' ? 'Reactivate' : 'Deprecate'}
           </Button>
         )}
+        {canEdit && (
+          <Button color="info" disabled={busy} onClick={toggleDevOnly}>
+            {config.developmentOnly ? 'Clear dev-only' : 'Mark dev-only'}
+          </Button>
+        )}
         <Box sx={{ flex: 1 }} />
         <Button onClick={onClose}>Close</Button>
       </Stack>
@@ -189,6 +211,7 @@ function CreateDialog({
     maxValue: '',
   })
   const [defaultValue, setDefaultValue] = useState<unknown>(false)
+  const [devOnly, setDevOnly] = useState(false)
   const [valid, setValid] = useState(true)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -206,6 +229,7 @@ function CreateDialog({
         owner: form.owner,
         description: form.description,
         defaultValue,
+        developmentOnly: devOnly,
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
       }
       if (form.minValue !== '') payload.minValue = parseFloat(form.minValue)
@@ -215,6 +239,7 @@ function CreateDialog({
       onClose()
       setForm({ key: '', type: 'Boolean', category: 'Gameplay', owner: '', description: '', tags: '', minValue: '', maxValue: '' })
       setDefaultValue(false)
+      setDevOnly(false)
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Create failed.')
     } finally {
@@ -286,6 +311,10 @@ function CreateDialog({
           <TextField label="Owner team" size="small" value={form.owner} onChange={(e) => set('owner', e.target.value)} />
           <TextField label="Description" size="small" multiline minRows={2} value={form.description} onChange={(e) => set('description', e.target.value)} />
           <TextField label="Tags (comma separated)" size="small" value={form.tags} onChange={(e) => set('tags', e.target.value)} />
+          <FormControlLabel
+            control={<Checkbox checked={devOnly} onChange={(e) => setDevOnly(e.target.checked)} />}
+            label="Development only — never served to Approved/Production"
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -390,7 +419,10 @@ export default function ConfigurationsPage() {
             )}
             {items.map((config) => (
               <TableRow key={config.key} hover sx={{ cursor: 'pointer' }} onClick={() => setSelected(config)}>
-                <TableCell sx={{ fontFamily: 'Consolas, monospace' }}>{config.key}</TableCell>
+                <TableCell sx={{ fontFamily: 'Consolas, monospace' }}>
+                  {config.key}
+                  {config.developmentOnly && <Chip size="small" color="info" label="DEV" sx={{ ml: 1 }} />}
+                </TableCell>
                 <TableCell>{config.category}</TableCell>
                 <TableCell>{config.type}</TableCell>
                 <TableCell sx={{ maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

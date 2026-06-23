@@ -21,6 +21,7 @@ export interface ConfigDefinition {
   category: string
   status: ConfigStatus
   activationPolicy: string
+  developmentOnly: boolean
   tags: string[]
   validation: ValidationRules
   createdBy: string
